@@ -7,6 +7,7 @@ use App\Models\Book;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class BookingController extends Controller
 {
@@ -15,13 +16,6 @@ class BookingController extends Controller
         $this->middleware('auth');
         $this->middleware('client')->except(['index', 'store', 'destroy']);
     }
-
-    public function index()
-    {
-        $bookings = Auth::user()->bookings()->with('book')->get();
-        return view('bookings.index', compact('bookings'));
-    }
-
     public function store(Request $request, Book $book)
     {
         if ($book->available_copies <= 0) {
@@ -55,9 +49,16 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.index')->with('success', 'Бронь снята');
     }
-    public function allBookings()
+    public function index()
     {
-    $bookings = Booking::with('user', 'book')->latest()->get();
-    return view('bookings.all', compact('bookings'));
+        $bookings = auth()->user()->bookings()->with('book')->latest()->get();
+        return Inertia::render('Bookings/Index', ['bookings' => $bookings]);
     }
+    public function allBookings()
+{
+    $bookings = Booking::with('user', 'book')->latest()->get();
+    return Inertia::render('Admin/Bookings', [
+        'bookings' => $bookings
+    ]);
+}
 }

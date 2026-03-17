@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BookController extends Controller
 {
@@ -14,7 +15,7 @@ class BookController extends Controller
         $this->middleware('librarian')->except(['index', 'show']);
     }
 
-    public function index(Request $request)
+  public function index(Request $request)
 {
     $query = Book::query();
 
@@ -28,14 +29,14 @@ class BookController extends Controller
         });
     }
 
-    $books = $query->get();
-    return view('books.index', compact('books'));
+     $books = $query->get();
+
+    return Inertia::render('Books/Index', [
+        'books' => $books,
+        'filters' => $request->only('search'),
+    ]);
 }
 
-    public function create()
-    {
-        return view('books.create');
-    }
 
     public function store(Request $request)
     {
@@ -57,15 +58,8 @@ class BookController extends Controller
         return redirect()->route('books.index')->with('success', 'Книга успешно добавлена');
     }
 
-    public function show(Book $book)
-    {
-        return view('books.show', compact('book'));
-    }
 
-    public function edit(Book $book)
-    {
-        return view('books.edit', compact('book'));
-    }
+
 
     public function update(Request $request, Book $book)
     {
@@ -97,5 +91,17 @@ class BookController extends Controller
     {
         $book->delete();
         return redirect()->route('books.index')->with('success', 'Книга удалена');
+    }
+    public function create()
+    {
+        return Inertia::render('Books/Create');
+    }
+    public function edit(Book $book)
+    {
+        return Inertia::render('Books/Edit', ['book' => $book]);
+    }
+    public function show(Book $book)
+    {
+        return Inertia::render('Books/Show', ['book' => $book]);
     }
 }

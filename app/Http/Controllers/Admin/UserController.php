@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -13,17 +14,6 @@ class UserController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('admin');
-    }
-
-    public function index()
-    {
-        $users = User::all();
-        return view('admin.users.index', compact('users'));
-    }
-
-    public function create()
-    {
-        return view('admin.users.create');
     }
 
     public function store(Request $request)
@@ -45,10 +35,6 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Пользователь создан');
     }
 
-    public function edit(User $user)
-    {
-        return view('admin.users.edit', compact('user'));
-    }
 
     public function update(Request $request, User $user)
     {
@@ -81,5 +67,18 @@ class UserController extends Controller
         }
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Пользователь удалён');
+    }
+    public function index()
+    {
+        $users = User::all();
+        return Inertia::render('Admin/Users/Index', ['users' => $users]);
+    }
+    public function create()
+    {
+        return Inertia::render('Admin/Users/Create');
+    }
+    public function edit(User $user)
+    {
+        return Inertia::render('Admin/Users/Edit', ['user' => $user]);
     }
 }

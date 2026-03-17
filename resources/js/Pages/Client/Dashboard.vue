@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
         <div class="container mt-4">
-            <h1>Панель управления</h1>
+            <h1>Личный кабинет читателя</h1>
             <p>Добро пожаловать, {{ $page.props.auth?.user?.name }}!</p>
         </div>
     </AppLayout>

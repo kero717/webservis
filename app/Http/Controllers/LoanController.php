@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LoanController extends Controller
 {
@@ -16,28 +17,6 @@ class LoanController extends Controller
         $this->middleware('auth');
         $this->middleware('librarian');
     }
-
-    
-       public function index()
-{
-    $loans = Loan::with('user', 'book')->latest()->get();
-    return view('loans.index', compact('loans'));
-}
-
-   public function create(Request $request)
-{
-    $bookings = Booking::with('user', 'book')->where('expires_at', '>', Carbon::now())->get();
-    $books = Book::where('available_copies', '>', 0)->get();
-    $users = User::all();
-    
-    $selectedBooking = null;
-    if ($request->has('booking_id')) {
-        $selectedBooking = Booking::with('user', 'book')->find($request->booking_id);
-    }
-    
-    return view('loans.create', compact('bookings', 'books', 'users', 'selectedBooking'));
-}
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -78,4 +57,26 @@ class LoanController extends Controller
 
         return redirect()->route('loans.index')->with('success', 'Книга принята');
     }
+
+        public function index()
+    {
+        $loans = Loan::with('user', 'book')->latest()->get();
+        return Inertia::render('Loans/Index', [
+            'loans' => $loans
+        ]);
+    }
+public function create(Request $request)
+{
+    $bookings = Booking::with('user', 'book')->where('expires_at', '>', now())->get();
+    $books = Book::where('available_copies', '>', 0)->get();
+    $users = User::all();
+    $selectedBooking = $request->has('booking_id') ? Booking::find($request->booking_id) : null;
+    return Inertia::render('Loans/Create', [
+        'bookings' => $bookings,
+        'books' => $books,
+        'users' => $users,
+        'selectedBooking' => $selectedBooking,
+    ]);
+}
+
 }

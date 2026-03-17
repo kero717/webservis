@@ -6,16 +6,14 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LoanController;
+use Inertia\Inertia;
 
 // Главная страница (просто верни view, без Inertia)
 Route::get('/', function () {
-    return view('welcome');
-});
+    return Inertia::render('Welcome');
+})->name('home');
 
-// Маршруты для авторизации (Breeze)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {
@@ -83,3 +81,16 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 });
+Route::middleware(['auth'])->group(function () {
+    // другие маршруты...
+    Route::get('/client/dashboard', fn() => Inertia::render('Client/Dashboard'))->name('client.dashboard');
+});
+// Администратор
+Route::middleware(['auth', 'admin'])->get('/admin/dashboard', function () {
+    return Inertia::render('Admin/Dashboard');
+})->name('admin.dashboard');
+
+// Библиотекарь
+Route::get('/librarian/dashboard', fn() => Inertia::render('Librarian/Dashboard'))
+    ->name('librarian.dashboard')
+    ->middleware(['auth', 'librarian']);

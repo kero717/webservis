@@ -1,8 +1,8 @@
 <template>
     <AppLayout>
         <div class="container mt-4">
-            <h1>Панель управления</h1>
-            <p>Добро пожаловать, {{ $page.props.auth?.user?.name }}!</p>
+            <h1>Панель библиотекаря</h1>
+            <p>Добро пожаловать, {{ $page.props.auth?.user?.name }} (роль: библиотекарь)</p>
         </div>
     </AppLayout>
 </template>
